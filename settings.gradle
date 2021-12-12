@@ -1,0 +1,3 @@
+rootProject.name = "Navigation Compose"
+include ':app',
+        ':mad_navigation_compose'
