@@ -1,4 +1,4 @@
 jdk:
-  - openjdk11
+ - openjdk11
 install:
-  - ./gradlew build :lib:publishToMavenLocal
+ - ./gradlew :mad_navigation_compose:build :mad_navigation_compose:publishToMavenLocal

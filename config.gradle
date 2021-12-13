@@ -8,8 +8,8 @@ ext {
     buildTools = "30.0.2"
 
     //version
-    vCode = 3
-    vName = "1.0.1"
+    vCode = 1
+    vName = "1.0.0"
 
     //gradle
     gradleVersion = '7.0.4'
