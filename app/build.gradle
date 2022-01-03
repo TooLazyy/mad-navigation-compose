@@ -7,7 +7,6 @@ apply from: '../config.gradle'
 
 android {
     compileSdkVersion project.compileSdk
-    buildToolsVersion project.buildTools
 
     defaultConfig {
         applicationId project.appId
