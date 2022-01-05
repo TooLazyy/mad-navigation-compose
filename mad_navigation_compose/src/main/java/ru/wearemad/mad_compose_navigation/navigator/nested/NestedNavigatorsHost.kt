@@ -22,8 +22,8 @@ interface NestedNavigatorsHost {
 
     fun removeNestedNavigator(screenKey: String)
 
-    fun restoreNestedNavigators(
-        inState: Bundle,
+    suspend fun restoreNestedNavigators(
+        inState: Bundle?,
         navigatorFactory: () -> NestedNavigator,
         nestedNavigatorFactory: () -> NestedNavigator,
     )

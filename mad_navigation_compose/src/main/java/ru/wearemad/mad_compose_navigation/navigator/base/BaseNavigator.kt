@@ -1,6 +1,5 @@
 package ru.wearemad.mad_compose_navigation.navigator.base
 
-import android.os.Bundle
 import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +16,6 @@ import ru.wearemad.mad_compose_navigation.back_press.handler.ChildrenBackPressHa
 import ru.wearemad.mad_compose_navigation.back_press.handler.ChildrenBackPressHandlerDelegate
 import ru.wearemad.mad_compose_navigation.command.Back
 import ru.wearemad.mad_compose_navigation.command.Command
-import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigator
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigatorHostDelegate
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigatorState
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigatorsHost
@@ -38,7 +36,7 @@ abstract class BaseNavigator :
     protected var navigatorState: NavigatorState = NavigatorState()
     protected val navigatorMutableStateFlow = MutableStateFlow(navigatorState)
 
-    private val scope = CoroutineScope(Dispatchers.Main.immediate + supervisorJob)
+    protected val scope = CoroutineScope(Dispatchers.Main.immediate + supervisorJob)
 
     override val navigatorStateFlow: StateFlow<NavigatorState>
         get() = navigatorMutableStateFlow
@@ -52,7 +50,6 @@ abstract class BaseNavigator :
                 .collect {
                     when (it) {
                         is NavigatorEvent.ExecuteCommands -> onExecuteCommandsEvent(it)
-                        is NavigatorEvent.RestoreState -> onRestoreStateEvent(it)
                         is NavigatorEvent.OnNestedNavigatorsStackChanged -> onNestedNavigatorsStackChangedEvent()
                     }
                 }
@@ -71,28 +68,6 @@ abstract class BaseNavigator :
     @MainThread
     override suspend fun executeCommands(vararg commands: Command) {
         eventsChannel.send(NavigatorEvent.ExecuteCommands(commands))
-    }
-
-    override fun saveState(): Bundle =
-        Bundle().apply {
-            putParcelableArray(
-                Navigator.KEY_COMPOSE_NAVIGATORS_DATA,
-                routesList.toTypedArray()
-            )
-            putBundle(
-                Navigator.KEY_COMPOSE_NESTED_NAVIGATORS_DATA,
-                prepareNestedNavigatorSavedState()
-            )
-        }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun restoreState(
-        inState: Bundle,
-        nestedNavigatorFactory: () -> NestedNavigator
-    ) {
-        scope.launch {
-            eventsChannel.send(NavigatorEvent.RestoreState(inState, nestedNavigatorFactory))
-        }
     }
 
     override fun dispatchSystemOnBackPressed() {
@@ -124,6 +99,7 @@ abstract class BaseNavigator :
         clearUnusedNestedNavigators(routesList)
         withContext(mainDispatcher) {
             updateNavigatorState()
+            afterStackChanged()
         }
     }
 
@@ -132,21 +108,10 @@ abstract class BaseNavigator :
             routesList = it.execute(routesList)
         }
         onStackChanged()
+        afterStackChanged()
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private suspend fun onRestoreStateEvent(event: NavigatorEvent.RestoreState) {
-        val inState = event.inState
-        val nestedNavigatorFactory = event.nestedNavigatorFactory
-
-        routesList =
-            (inState.getParcelableArray(Navigator.KEY_COMPOSE_NAVIGATORS_DATA) ?: arrayOf())
-                .toList() as List<Route>
-        restoreNestedNavigators(inState, nestedNavigatorFactory, nestedNavigatorFactory)
-        onStackChanged()
-    }
-
-    private suspend fun onStackChanged() {
+    protected suspend fun onStackChanged() {
         navigatorState = NavigatorState(
             currentRoute = routesList.lastOrNull(),
             currentStack = routesList,
@@ -168,6 +133,5 @@ abstract class BaseNavigator :
     private fun updateNavigatorState() {
         updateOnBackPressedCallback()
         navigatorMutableStateFlow.value = navigatorState
-        afterStackChanged()
     }
 }

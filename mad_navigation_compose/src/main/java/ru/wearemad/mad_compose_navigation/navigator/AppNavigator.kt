@@ -1,29 +1,56 @@
 package ru.wearemad.mad_compose_navigation.navigator
 
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
-import ru.wearemad.mad_compose_navigation.navigator.base.BaseNavigator
+import android.os.Bundle
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigator
+import ru.wearemad.mad_compose_navigation.navigator.saveable.RestorableNavigator
+import ru.wearemad.mad_compose_navigation.navigator.saveable.SaveableNavigator
+import ru.wearemad.mad_compose_navigation.route.Route
 
 open class AppNavigator(
     canGoBack: Boolean = false
-) : BaseNavigator() {
+) : CommonNavigator(canGoBack = canGoBack),
+    RestorableNavigator,
+    SaveableNavigator {
 
-    private val backPressedCallback = object : OnBackPressedCallback(canGoBack) {
+    companion object {
 
-        override fun handleOnBackPressed() {
-            dispatchSystemOnBackPressed()
+        private const val KEY_COMPOSE_NAVIGATORS_DATA = "key_root_navigators_data"
+        private const val KEY_COMPOSE_NESTED_NAVIGATORS_DATA = "key_root_nested_navigators_data"
+    }
+
+    private var restoreStateJob: Job? = null
+
+    @Suppress("UNCHECKED_CAST")
+    override fun restoreState(
+        inState: Bundle,
+        nestedNavigatorFactory: () -> NestedNavigator
+    ) {
+        restoreStateJob?.cancel()
+        restoreStateJob = scope.launch {
+            routesList =
+                (inState.getParcelableArray(KEY_COMPOSE_NAVIGATORS_DATA) ?: arrayOf()).toList() as List<Route>
+
+            val nestedNavigatorsBundle = inState.getBundle(KEY_COMPOSE_NESTED_NAVIGATORS_DATA)
+            restoreNestedNavigators(
+                nestedNavigatorsBundle,
+                nestedNavigatorFactory,
+                nestedNavigatorFactory
+            )
+            onStackChanged()
+            afterStackChanged()
         }
     }
 
-    override fun updateOnBackPressedCallback() {
-        backPressedCallback.isEnabled = canGoBack
-    }
-
-    override fun registerOnBackPressedCallback(dispatcher: OnBackPressedDispatcher?) {
-        dispatcher?.addCallback(backPressedCallback)
-    }
-
-    override fun unregisterOnBackPressedCallback() {
-        backPressedCallback.remove()
+    override fun saveState(): Bundle = Bundle().apply {
+        putParcelableArray(
+            KEY_COMPOSE_NAVIGATORS_DATA,
+            routesList.toTypedArray()
+        )
+        putBundle(
+            KEY_COMPOSE_NESTED_NAVIGATORS_DATA,
+            prepareNestedNavigatorSavedState()
+        )
     }
 }
