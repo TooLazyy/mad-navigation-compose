@@ -1,7 +1,6 @@
 package ru.wearemad.mad_compose_navigation.navigator.nested
 
 import android.os.Bundle
-import ru.wearemad.mad_compose_navigation.navigator.base.Navigator
 import ru.wearemad.mad_compose_navigation.navigator.base.NavigatorState
 import ru.wearemad.mad_compose_navigation.route.Route
 
@@ -45,21 +44,19 @@ class NestedNavigatorHostDelegate : NestedNavigatorsHost {
     }
 
     override fun prepareNestedNavigatorSavedState(): Bundle = Bundle().apply {
-        nestedNavigators.forEach { nestedRouter ->
-            val key = nestedRouter.screenKey
-            val savedState = nestedRouter.navigator.saveState()
+        nestedNavigators.forEach { nestedData ->
+            val key = nestedData.screenKey
+            val savedState = nestedData.navigator.saveState(key)
             putBundle(key, savedState)
         }
     }
 
-    override fun restoreNestedNavigators(
-        inState: Bundle,
+    override suspend fun restoreNestedNavigators(
+        inState: Bundle?,
         navigatorFactory: () -> NestedNavigator,
         nestedNavigatorFactory: () -> NestedNavigator,
     ) {
-        val nestedNavigatorsBundle =
-            inState
-                .getBundle(Navigator.KEY_COMPOSE_NESTED_NAVIGATORS_DATA) ?: return
+        val nestedNavigatorsBundle = inState ?: return
         nestedNavigatorsBundle.keySet()
             .mapNotNull { key ->
                 val bundle = nestedNavigatorsBundle.getBundle(key)
@@ -70,12 +67,11 @@ class NestedNavigatorHostDelegate : NestedNavigatorsHost {
                 }
             }
             .forEach { bundlePair ->
-                createAndGetNestedRouter(
+                val navigator = createAndGetNestedRouter(
                     bundlePair.first,
                     nestedNavigatorFactory
-                ).also {
-                    it.restoreState(bundlePair.second, nestedNavigatorFactory)
-                }
+                )
+                navigator.restoreState(bundlePair.second, bundlePair.first, nestedNavigatorFactory)
             }
     }
 
@@ -93,10 +89,11 @@ class NestedNavigatorHostDelegate : NestedNavigatorsHost {
         screenKey: String,
         factory: () -> NestedNavigator
     ): NestedNavigator {
+        val stackChangedListener = NestedNavigatorStateChangedListener {
+            onNestedNavigatorStackChanged(screenKey, it)
+        }
         val nestedNavigator = factory().also { navigator ->
-            navigator.addNavigatorStateChangedListener {
-                onNestedNavigatorStackChanged(screenKey, it)
-            }
+            navigator.addNavigatorStateChangedListener(stackChangedListener)
         }
         nestedNavigators = nestedNavigators.toMutableList().apply {
             add(
@@ -106,6 +103,7 @@ class NestedNavigatorHostDelegate : NestedNavigatorsHost {
                 )
             )
         }
+        stackChangedListener.onChanged(nestedNavigator.navigatorStateFlow.value)
         return nestedNavigator
     }
 }

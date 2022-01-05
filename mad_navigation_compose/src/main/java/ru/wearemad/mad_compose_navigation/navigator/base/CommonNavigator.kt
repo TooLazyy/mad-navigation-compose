@@ -1,10 +1,10 @@
-package ru.wearemad.mad_compose_navigation.navigator
+package ru.wearemad.mad_compose_navigation.navigator.base
 
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import ru.wearemad.mad_compose_navigation.navigator.base.BaseNavigator
 
-open class AppNavigator(
+open class CommonNavigator(
     canGoBack: Boolean = false
 ) : BaseNavigator() {
 
