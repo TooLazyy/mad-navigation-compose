@@ -87,6 +87,24 @@ abstract class BaseNavigator :
 
     open fun afterStackChanged() {}
 
+    protected suspend fun onStackChanged() {
+        navigatorState = NavigatorState(
+            currentRoute = routesList.lastOrNull(),
+            currentStack = routesList,
+            nestedNavigatorsState = nestedNavigators.map {
+                NestedNavigatorState(
+                    it.screenKey,
+                    it.navigator.navigatorStateFlow.value,
+                )
+            },
+            stateChangedAtLeastOnce = true,
+        )
+        clearUnusedNestedNavigators(routesList)
+        withContext(mainDispatcher) {
+            updateNavigatorState()
+        }
+    }
+
     private suspend fun onNestedNavigatorsStackChangedEvent() {
         navigatorState = navigatorState.copy(
             nestedNavigatorsState = nestedNavigators.map {
@@ -109,24 +127,6 @@ abstract class BaseNavigator :
         }
         onStackChanged()
         afterStackChanged()
-    }
-
-    protected suspend fun onStackChanged() {
-        navigatorState = NavigatorState(
-            currentRoute = routesList.lastOrNull(),
-            currentStack = routesList,
-            nestedNavigatorsState = nestedNavigators.map {
-                NestedNavigatorState(
-                    it.screenKey,
-                    it.navigator.navigatorStateFlow.value,
-                )
-            },
-            stateChangedAtLeastOnce = true,
-        )
-        clearUnusedNestedNavigators(routesList)
-        withContext(mainDispatcher) {
-            updateNavigatorState()
-        }
     }
 
     @MainThread
