@@ -1,6 +1,7 @@
-package ru.wearemad.mad_compose_navigation.navigator
+package ru.wearemad.mad_compose_navigation.navigator.impl
 
 import android.os.Bundle
+import ru.wearemad.mad_compose_navigation.navigator.base.CommonNavigator
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigator
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigatorStateChangedListener
 import ru.wearemad.mad_compose_navigation.route.Route

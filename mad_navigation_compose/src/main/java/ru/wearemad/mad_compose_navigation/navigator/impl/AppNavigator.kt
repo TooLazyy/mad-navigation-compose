@@ -1,18 +1,16 @@
-package ru.wearemad.mad_compose_navigation.navigator
+package ru.wearemad.mad_compose_navigation.navigator.impl
 
 import android.os.Bundle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.wearemad.mad_compose_navigation.navigator.base.CommonNavigator
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigator
-import ru.wearemad.mad_compose_navigation.navigator.saveable.RestorableNavigator
-import ru.wearemad.mad_compose_navigation.navigator.saveable.SaveableNavigator
 import ru.wearemad.mad_compose_navigation.route.Route
 
 open class AppNavigator(
     canGoBack: Boolean = false
 ) : CommonNavigator(canGoBack = canGoBack),
-    RestorableNavigator,
-    SaveableNavigator {
+    RootNavigator {
 
     companion object {
 
