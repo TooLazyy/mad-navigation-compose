@@ -7,8 +7,8 @@ import ru.wearemad.mad_compose_navigation.route.Route
  * @param route - router to set
  */
 class NewRoot(
+    private val route: Route,
     private val includeDialogs: Boolean = true,
-    private val route: Route
 ) : Command {
 
     override fun execute(
@@ -74,7 +74,7 @@ class Back(
         return CommandOutput(
             screensStack,
             dialogsStack.toMutableList().apply {
-                removeAt(screensStack.lastIndex)
+                removeAt(dialogsStack.lastIndex)
             }
         )
     }
@@ -97,7 +97,8 @@ class Back(
  * @param route to get back to
  */
 class BackTo(
-    private val route: Route
+    private val route: Route,
+    private val closeDialogs: Boolean
 ) : Command {
 
     override fun execute(
@@ -111,7 +112,11 @@ class BackTo(
                 }
             }
         },
-        input.dialogsStack
+        if (closeDialogs) {
+            listOf()
+        } else {
+            input.dialogsStack
+        }
     )
 }
 

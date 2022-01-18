@@ -20,7 +20,7 @@ suspend fun Router.newRoot(
     includeDialogs: Boolean = true
 ) {
     executeCommands(
-        NewRoot(includeDialogs, route)
+        NewRoot(route, includeDialogs)
     )
 }
 
