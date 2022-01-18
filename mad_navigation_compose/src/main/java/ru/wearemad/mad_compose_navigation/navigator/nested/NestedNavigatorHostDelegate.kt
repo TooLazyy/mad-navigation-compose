@@ -1,7 +1,10 @@
 package ru.wearemad.mad_compose_navigation.navigator.nested
 
 import android.os.Bundle
-import ru.wearemad.mad_compose_navigation.navigator.base.NavigatorState
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import ru.wearemad.mad_compose_navigation.route.Route
 
 /**
@@ -9,9 +12,13 @@ import ru.wearemad.mad_compose_navigation.route.Route
  */
 class NestedNavigatorHostDelegate : NestedNavigatorsHost {
 
+    private val onNestedNavigatorStackChangedChannel =
+        Channel<NestedNavigatorStackChangedEvent>(capacity = BUFFERED)
+
     override var nestedNavigators: List<NestedNavigatorData> = listOf()
 
-    override var onNestedNavigatorStackChanged: (screenKey: String, state: NavigatorState) -> Unit = { _, _ -> }
+    override val onNestedNavigatorStackChangedFlow: Flow<NestedNavigatorStackChangedEvent> =
+        onNestedNavigatorStackChangedChannel.receiveAsFlow()
 
     override fun getOrCreateNestedNavigator(
         screenKey: String,
@@ -90,7 +97,9 @@ class NestedNavigatorHostDelegate : NestedNavigatorsHost {
         factory: () -> NestedNavigator
     ): NestedNavigator {
         val stackChangedListener = NestedNavigatorStateChangedListener {
-            onNestedNavigatorStackChanged(screenKey, it)
+            onNestedNavigatorStackChangedChannel.trySend(
+                NestedNavigatorStackChangedEvent(screenKey, it)
+            )
         }
         val nestedNavigator = factory().also { navigator ->
             navigator.addNavigatorStateChangedListener(stackChangedListener)

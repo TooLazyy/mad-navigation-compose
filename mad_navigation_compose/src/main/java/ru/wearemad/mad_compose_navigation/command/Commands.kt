@@ -7,10 +7,20 @@ import ru.wearemad.mad_compose_navigation.route.Route
  * @param route - router to set
  */
 class NewRoot(
+    private val includeDialogs: Boolean = true,
     private val route: Route
 ) : Command {
 
-    override fun execute(currentStack: List<Route>): List<Route> = listOf(route)
+    override fun execute(
+        input: CommandInput
+    ): CommandOutput = CommandOutput(
+        listOf(route),
+        if (includeDialogs) {
+            listOf()
+        } else {
+            input.dialogsStack
+        }
+    )
 }
 
 /**
@@ -21,23 +31,65 @@ class Add(
     private val route: Route
 ) : Command {
 
-    override fun execute(currentStack: List<Route>): List<Route> =
-        currentStack.toMutableList().apply {
+    override fun execute(
+        input: CommandInput
+    ): CommandOutput = CommandOutput(
+        input.screensStack.toMutableList().apply {
             add(route)
-        }
+        },
+        input.dialogsStack
+    )
 }
 
 /**
  * Remove a most recent rout from stack
  */
-class Back : Command {
+class Back(
+    private val includeDialogs: Boolean = true
+) : Command {
 
-    override fun execute(currentStack: List<Route>): List<Route> =
-        currentStack.toMutableList().apply {
-            if (isNotEmpty()) {
-                removeAt(currentStack.lastIndex)
-            }
+    override fun execute(
+        input: CommandInput
+    ): CommandOutput = applyCommand(
+        input.screensStack,
+        input.dialogsStack
+    )
+
+    private fun applyCommand(
+        screensStack: List<Route>,
+        dialogsStack: List<Route>
+    ): CommandOutput {
+        if (includeDialogs.not()) {
+            return backWithoutDialogRoutes(
+                screensStack,
+                dialogsStack
+            )
         }
+        if (dialogsStack.isEmpty()) {
+            return backWithoutDialogRoutes(
+                screensStack,
+                dialogsStack
+            )
+        }
+        return CommandOutput(
+            screensStack,
+            dialogsStack.toMutableList().apply {
+                removeAt(screensStack.lastIndex)
+            }
+        )
+    }
+
+    private fun backWithoutDialogRoutes(
+        screensStack: List<Route>,
+        dialogsStack: List<Route>
+    ): CommandOutput = CommandOutput(
+        screensStack.toMutableList().apply {
+            if (isNotEmpty()) {
+                removeAt(screensStack.lastIndex)
+            }
+        },
+        dialogsStack
+    )
 }
 
 /**
@@ -48,28 +100,42 @@ class BackTo(
     private val route: Route
 ) : Command {
 
-    override fun execute(currentStack: List<Route>): List<Route> =
-        currentStack.toMutableList().apply {
-            val index = currentStack.indexOfFirst { it.screenKey == route.screenKey }
+    override fun execute(
+        input: CommandInput
+    ): CommandOutput = CommandOutput(
+        input.screensStack.toMutableList().apply {
+            val index = input.screensStack.indexOfFirst { it.screenKey == route.screenKey }
             if (index != -1) {
-                while (currentStack.size != index + 1) {
-                    removeAt(currentStack.lastIndex)
+                while (input.screensStack.size != index + 1) {
+                    removeAt(input.screensStack.lastIndex)
                 }
             }
-        }
+        },
+        input.dialogsStack
+    )
 }
 
 /**
  * Navigates back to a very first route
  */
-class BackToRoot : Command {
+class BackToRoot(
+    private val closeDialogs: Boolean = true,
+) : Command {
 
-    override fun execute(currentStack: List<Route>): List<Route> =
-        if (currentStack.isEmpty()) {
-            currentStack
+    override fun execute(
+        input: CommandInput
+    ): CommandOutput = CommandOutput(
+        if (input.screensStack.isEmpty()) {
+            input.screensStack
         } else {
-            listOf(currentStack.first())
+            listOf(input.screensStack.first())
+        },
+        if (closeDialogs) {
+            input.dialogsStack
+        } else {
+            listOf()
         }
+    )
 }
 
 /**
@@ -80,11 +146,33 @@ class Replace(
     private val route: Route
 ) : Command {
 
-    override fun execute(currentStack: List<Route>): List<Route> =
-        currentStack.toMutableList().apply {
+    override fun execute(
+        input: CommandInput
+    ): CommandOutput = CommandOutput(
+        input.screensStack.toMutableList().apply {
             if (isNotEmpty()) {
-                removeAt(currentStack.lastIndex)
+                removeAt(input.screensStack.lastIndex)
             }
             add(route)
+        },
+        input.dialogsStack
+    )
+}
+
+/**
+ * Open a screen as dialog, i.e. in a different window
+ * @param route to replace the last one
+ */
+class OpenAsDialog(
+    private val route: Route
+) : Command {
+
+    override fun execute(
+        input: CommandInput
+    ): CommandOutput = CommandOutput(
+        input.screensStack,
+        input.dialogsStack.toMutableList().apply {
+            add(route)
         }
+    )
 }

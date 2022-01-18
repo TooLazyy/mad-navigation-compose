@@ -1,5 +1,4 @@
 ext {
-
     applicationName = "Navigation Compose"
     appId = "ru.wearemad.navigation"
     compileSdk = 31
@@ -16,6 +15,9 @@ ext {
     //kotlin
     kotlinVersion = '1.5.31'
     ktxVersion = '1.7.0'
+    kotlinCoroutinesVersion = '1.3.9'
+    kotlixExtVersion = '1.7.0'
+    kotlinCoroutinesAndroidVersion = '1.5.2'
 
     //app compat
     appCompatVersion = '1.4.0'

@@ -13,7 +13,8 @@ open class AppNestedNavigator(
 
     companion object {
 
-        private const val KEY_NESTED_NAVIGATOR_DATA_PREFIX = "key_nested_navigator_data_prefix_"
+        private const val KEY_NESTED_ROUTES_DATA_PREFIX = "key_nested_routes_data_prefix_"
+        private const val KEY_NESTED_DIALOGS_DATA_PREFIX = "key_nested_dialogs_data_prefix_"
         private const val KEY_NESTED_NAVIGATOR_NESTED_DATA_PREFIX = "key_nested_navigator_nested_data_prefix_"
     }
 
@@ -38,6 +39,10 @@ open class AppNestedNavigator(
             buildRoutesKey(screenId),
             routesList.toTypedArray()
         )
+        putParcelableArray(
+            buildDialogsKey(screenId),
+            dialogRoutesList.toTypedArray()
+        )
         putBundle(
             buildNestedKey(screenId),
             prepareNestedNavigatorSavedState()
@@ -52,6 +57,10 @@ open class AppNestedNavigator(
     ) {
         routesList =
             (inState.getParcelableArray(buildRoutesKey(screenId))
+                ?: arrayOf()).toList() as List<Route>
+
+        dialogRoutesList =
+            (inState.getParcelableArray(buildDialogsKey(screenId))
                 ?: arrayOf()).toList() as List<Route>
 
         val nestedNavigatorsBundle = inState.getBundle(
@@ -69,5 +78,8 @@ open class AppNestedNavigator(
         KEY_NESTED_NAVIGATOR_NESTED_DATA_PREFIX + screenId
 
     private fun buildRoutesKey(screenId: String): String =
-        KEY_NESTED_NAVIGATOR_DATA_PREFIX + screenId
+        KEY_NESTED_ROUTES_DATA_PREFIX + screenId
+
+    private fun buildDialogsKey(screenId: String): String =
+        KEY_NESTED_DIALOGS_DATA_PREFIX + screenId
 }

@@ -47,6 +47,9 @@ dependencies {
     implementation "androidx.activity:activity-compose:$composeActivityVersion"
     implementation "androidx.compose.runtime:runtime:$composeVersion"
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesAndroidVersion"
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

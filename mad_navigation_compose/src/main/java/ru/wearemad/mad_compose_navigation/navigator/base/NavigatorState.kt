@@ -9,6 +9,7 @@ import ru.wearemad.mad_compose_navigation.route.Route
 data class NavigatorState(
     val currentRoute: Route? = null,
     val currentStack: List<Route> = listOf(),
+    val currentDialogsStack: List<Route> = listOf(),
     val nestedNavigatorsState: List<NestedNavigatorState> = listOf(),
     val stateChangedAtLeastOnce: Boolean = false
 )

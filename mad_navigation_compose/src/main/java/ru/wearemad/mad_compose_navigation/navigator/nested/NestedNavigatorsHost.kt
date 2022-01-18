@@ -1,8 +1,11 @@
 package ru.wearemad.mad_compose_navigation.navigator.nested
 
 import android.os.Bundle
+import kotlinx.coroutines.flow.Flow
 import ru.wearemad.mad_compose_navigation.navigator.base.NavigatorState
 import ru.wearemad.mad_compose_navigation.route.Route
+
+typealias NestedNavigatorStackChangedEvent = Pair<String, NavigatorState>
 
 /**
  * Describes how to interact with nested navigators
@@ -11,7 +14,7 @@ interface NestedNavigatorsHost {
 
     val nestedNavigators: List<NestedNavigatorData>
 
-    var onNestedNavigatorStackChanged: (screenKey: String, state: NavigatorState) -> Unit
+    val onNestedNavigatorStackChangedFlow: Flow<NestedNavigatorStackChangedEvent>
 
     fun getOrCreateNestedNavigator(
         screenKey: String,
