@@ -98,7 +98,7 @@ class Back(
  */
 class BackTo(
     private val route: Route,
-    private val closeDialogs: Boolean
+    private val closeDialogs: Boolean = true
 ) : Command {
 
     override fun execute(
