@@ -14,7 +14,8 @@ open class AppNavigator(
 
     companion object {
 
-        private const val KEY_COMPOSE_NAVIGATORS_DATA = "key_root_navigators_data"
+        private const val KEY_COMPOSE_ROUTES_DATA = "key_compose_routes_data"
+        private const val KEY_COMPOSE_DIALOGS_DATA = "key_compose_dialogs_data"
         private const val KEY_COMPOSE_NESTED_NAVIGATORS_DATA = "key_root_nested_navigators_data"
     }
 
@@ -28,7 +29,9 @@ open class AppNavigator(
         restoreStateJob?.cancel()
         restoreStateJob = scope.launch {
             routesList =
-                (inState.getParcelableArray(KEY_COMPOSE_NAVIGATORS_DATA) ?: arrayOf()).toList() as List<Route>
+                (inState.getParcelableArray(KEY_COMPOSE_ROUTES_DATA) ?: arrayOf()).toList() as List<Route>
+            dialogRoutesList =
+                (inState.getParcelableArray(KEY_COMPOSE_DIALOGS_DATA) ?: arrayOf()).toList() as List<Route>
 
             val nestedNavigatorsBundle = inState.getBundle(KEY_COMPOSE_NESTED_NAVIGATORS_DATA)
             restoreNestedNavigators(
@@ -43,8 +46,12 @@ open class AppNavigator(
 
     override fun saveState(): Bundle = Bundle().apply {
         putParcelableArray(
-            KEY_COMPOSE_NAVIGATORS_DATA,
+            KEY_COMPOSE_ROUTES_DATA,
             routesList.toTypedArray()
+        )
+        putParcelableArray(
+            KEY_COMPOSE_DIALOGS_DATA,
+            dialogRoutesList.toTypedArray()
         )
         putBundle(
             KEY_COMPOSE_NESTED_NAVIGATORS_DATA,

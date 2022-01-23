@@ -16,6 +16,7 @@ import ru.wearemad.mad_compose_navigation.back_press.handler.ChildrenBackPressHa
 import ru.wearemad.mad_compose_navigation.back_press.handler.ChildrenBackPressHandlerDelegate
 import ru.wearemad.mad_compose_navigation.command.Back
 import ru.wearemad.mad_compose_navigation.command.Command
+import ru.wearemad.mad_compose_navigation.command.CommandInput
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigatorHostDelegate
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigatorState
 import ru.wearemad.mad_compose_navigation.navigator.nested.NestedNavigatorsHost
@@ -33,6 +34,7 @@ abstract class BaseNavigator :
     private val eventsChannel = Channel<NavigatorEvent>()
 
     protected var routesList = listOf<Route>()
+    protected var dialogRoutesList = listOf<Route>()
     protected var navigatorState: NavigatorState = NavigatorState()
     protected val navigatorMutableStateFlow = MutableStateFlow(navigatorState)
 
@@ -42,7 +44,7 @@ abstract class BaseNavigator :
         get() = navigatorMutableStateFlow
 
     override val canGoBack: Boolean
-        get() = routesList.size > 1
+        get() = routesList.size > 1 || dialogRoutesList.isNotEmpty()
 
     init {
         scope.launch(bgDispatcher) {
@@ -54,10 +56,11 @@ abstract class BaseNavigator :
                     }
                 }
         }
-        onNestedNavigatorStackChanged = { id, state ->
-            scope.launch {
-                eventsChannel.send(NavigatorEvent.OnNestedNavigatorsStackChanged)
-            }
+        scope.launch(bgDispatcher) {
+            onNestedNavigatorStackChangedFlow
+                .collect {
+                    eventsChannel.send(NavigatorEvent.OnNestedNavigatorsStackChanged)
+                }
         }
     }
 
@@ -91,6 +94,7 @@ abstract class BaseNavigator :
         navigatorState = NavigatorState(
             currentRoute = routesList.lastOrNull(),
             currentStack = routesList,
+            currentDialogsStack = dialogRoutesList,
             nestedNavigatorsState = nestedNavigators.map {
                 NestedNavigatorState(
                     it.screenKey,
@@ -123,7 +127,14 @@ abstract class BaseNavigator :
 
     private suspend fun onExecuteCommandsEvent(event: NavigatorEvent.ExecuteCommands) {
         event.commands.forEach {
-            routesList = it.execute(routesList)
+            val result = it.execute(
+                CommandInput(
+                    routesList,
+                    dialogRoutesList
+                )
+            )
+            dialogRoutesList = result.newDialogsStack
+            routesList = result.newScreensStack
         }
         onStackChanged()
         afterStackChanged()
