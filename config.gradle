@@ -13,15 +13,16 @@ ext {
     gradleVersion = '7.0.4'
 
     //kotlin
-    kotlinVersion = '1.6.10'
-    ktxVersion = '1.7.0'
+    kotlinVersion = '1.7.0'
+    ktxVersion = '1.8.0'
     kotlinCoroutinesVersion = '1.6.0'
-    kotlinCoroutinesAndroidVersion = '1.6.0'
+    kotlinCoroutinesAndroidVersion = '1.6.1'
 
     //app compat
-    appCompatVersion = '1.4.1'
+    appCompatVersion = '1.4.2'
 
     //compose
-    composeVersion = '1.1.1'
-    composeActivityVersion = '1.4.0'
+    composeCompilerVersion = '1.2.0'
+    composeRuntimeVersion = '1.1.1'
+    composeActivityVersion = '1.5.0'
 }

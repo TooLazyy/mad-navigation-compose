@@ -1,0 +1,7 @@
+package ru.wearemad.mad_compose_navigation.impl.navigator.data
+
+import ru.wearemad.mad_compose_navigation.api.navigator.data.NavigatorEventsChannelEvent
+
+object NestedStackChanged : NavigatorEventsChannelEvent
+
+object DispatchSystemOnBackPressed : NavigatorEventsChannelEvent

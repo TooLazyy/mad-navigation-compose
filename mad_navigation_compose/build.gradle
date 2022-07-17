@@ -32,20 +32,19 @@ android {
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11
-        useIR = true
     }
     buildFeatures {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion project.composeVersion
+        kotlinCompilerExtensionVersion project.composeCompilerVersion
     }
 }
 
 dependencies {
 
     implementation "androidx.activity:activity-compose:$composeActivityVersion"
-    implementation "androidx.compose.runtime:runtime:$composeVersion"
+    implementation "androidx.compose.runtime:runtime:$composeRuntimeVersion"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesAndroidVersion"
