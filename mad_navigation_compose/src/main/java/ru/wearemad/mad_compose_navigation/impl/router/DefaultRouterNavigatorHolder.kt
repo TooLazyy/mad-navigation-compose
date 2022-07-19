@@ -35,7 +35,7 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
         commandsChannelJob?.cancel()
         currentExecutor = navigator
         commandsChannelJob = coroutineScope {
-            launch(mainDispatcher) {
+            launch(mainDispatcher + Job()) {
                 commandsChannel
                     .receiveAsFlow()
                     .collect {
