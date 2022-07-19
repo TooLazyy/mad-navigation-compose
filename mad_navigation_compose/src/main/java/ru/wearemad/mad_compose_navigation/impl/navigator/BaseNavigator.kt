@@ -8,8 +8,8 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,14 +17,14 @@ import ru.wearemad.mad_compose_navigation.api.back_press.BackPressCallbackHolder
 import ru.wearemad.mad_compose_navigation.api.back_press.ChildrenBackPressHandler
 import ru.wearemad.mad_compose_navigation.api.command.Command
 import ru.wearemad.mad_compose_navigation.api.command.CommandInput
-import ru.wearemad.mad_compose_navigation.impl.command.Back
 import ru.wearemad.mad_compose_navigation.api.navigator.Navigator
 import ru.wearemad.mad_compose_navigation.api.navigator.data.NavigatorParams
 import ru.wearemad.mad_compose_navigation.api.navigator.data.NavigatorState
 import ru.wearemad.mad_compose_navigation.api.navigator.nested.NestedNavigatorsHost
+import ru.wearemad.mad_compose_navigation.api.route.Route
+import ru.wearemad.mad_compose_navigation.impl.command.Back
 import ru.wearemad.mad_compose_navigation.impl.navigator.data.DispatchSystemOnBackPressed
 import ru.wearemad.mad_compose_navigation.impl.navigator.data.NestedStackChanged
-import ru.wearemad.mad_compose_navigation.api.route.Route
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -51,7 +51,7 @@ abstract class BaseNavigator(
     override val state: NavigatorState
         get() = stateMutableFlow.value
 
-    override val stateFlow: Flow<NavigatorState> = stateMutableFlow
+    override val stateFlow: StateFlow<NavigatorState> = stateMutableFlow
 
     override val canGoBack: Boolean
         get() = routesList.size > 1 || dialogRoutesList.isNotEmpty()

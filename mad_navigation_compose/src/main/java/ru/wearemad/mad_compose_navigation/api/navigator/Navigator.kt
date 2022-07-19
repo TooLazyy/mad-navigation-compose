@@ -1,6 +1,6 @@
 package ru.wearemad.mad_compose_navigation.api.navigator
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import ru.wearemad.mad_compose_navigation.api.back_press.BackPressHandler
 import ru.wearemad.mad_compose_navigation.api.back_press.ChildrenBackPressHandler
 import ru.wearemad.mad_compose_navigation.api.command.CommandsExecutor
@@ -20,5 +20,5 @@ interface Navigator :
 
     val state: NavigatorState
 
-    val stateFlow: Flow<NavigatorState>
+    val stateFlow: StateFlow<NavigatorState>
 }

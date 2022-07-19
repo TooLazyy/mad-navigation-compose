@@ -42,7 +42,6 @@ android {
 }
 
 dependencies {
-
     implementation "androidx.activity:activity-compose:$composeActivityVersion"
     implementation "androidx.compose.runtime:runtime:$composeRuntimeVersion"
 
