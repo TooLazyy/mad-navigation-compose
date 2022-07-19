@@ -17,6 +17,7 @@ import ru.wearemad.mad_compose_navigation.api.navigator.navigator_factory.Naviga
 import ru.wearemad.mad_compose_navigation.api.navigator.navigator_factory.NestedNavigatorFactory
 import ru.wearemad.mad_compose_navigation.impl.navigator.navigator_factory.DefaultNavigatorFactory
 import ru.wearemad.mad_compose_navigation.api.route.Route
+import ru.wearemad.mad_compose_navigation.impl.command.Back
 import ru.wearemad.mad_compose_navigation.utils.defaultMainNavigatorFactory
 import ru.wearemad.mad_compose_navigation.utils.defaultNestedNavigatorFactory
 import kotlin.coroutines.CoroutineContext
@@ -40,10 +41,23 @@ class MainActivity :
         val mainNavigator = rememberNavigator("root", factory)
         mainNavigator.registerOnBackPressedCallback(onBackPressedDispatcher)
         launch {
+            mainNavigator
+                .stateFlow
+                .collect {
+                    var a = it.hashCode() + 1
+                    a += 1
+                }
+        }
+        launch {
+            delay(1_000L)
             mainNavigator.executeCommands(
                 Add(Route1("screen_1"))
             )
-            delay(5_000)
+            delay(1_000L)
+            mainNavigator.executeCommands(
+                Add(Route1("screen_2"))
+            )
+            /*delay(5_000)
             val screen1NestedNav = mainNavigator.getOrCreateNestedNavigator(
                 "screen_1",
                 nestedFactory
@@ -56,12 +70,7 @@ class MainActivity :
                 nestedFactory
             )
             screen1_1NestedNav.executeCommands(Add(Route1("screen_1_1_1")))
-            delay(15_000)
-            val saved = mainNavigator.saveState()
-
-            val mainNavNew = rememberNavigator("root", factory)
-            mainNavNew.restoreState(saved, factory)
-            delay(50_000)
+            delay(15_000)*/
         }
 /*        val nested_1 = mainNavigator.getOrCreateNestedNavigator(
             "screen_1",

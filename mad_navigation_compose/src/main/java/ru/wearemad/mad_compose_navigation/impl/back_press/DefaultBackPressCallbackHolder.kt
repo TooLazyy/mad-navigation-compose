@@ -1,5 +1,6 @@
 package ru.wearemad.mad_compose_navigation.impl.back_press
 
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import kotlinx.coroutines.channels.Channel
@@ -15,6 +16,7 @@ class DefaultBackPressCallbackHolder(
     private val backPressedCallback = object : OnBackPressedCallback(canGoBack) {
 
         override fun handleOnBackPressed() {
+            Log.d("MIINE", "handleOnBackPressed, send event")
             inEventsChannel.trySend(DispatchSystemOnBackPressed)
         }
     }
@@ -24,6 +26,7 @@ class DefaultBackPressCallbackHolder(
     }
 
     override fun registerOnBackPressedCallback(dispatcher: OnBackPressedDispatcher?) {
+        Log.d("MIINE", "registerOnBackPressedCallback")
         dispatcher?.addCallback(backPressedCallback)
     }
 
