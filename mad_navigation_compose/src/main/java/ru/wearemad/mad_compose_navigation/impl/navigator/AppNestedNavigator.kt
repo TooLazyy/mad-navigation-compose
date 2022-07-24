@@ -1,7 +1,6 @@
 package ru.wearemad.mad_compose_navigation.impl.navigator
 
 import android.os.Bundle
-import kotlinx.coroutines.launch
 import ru.wearemad.mad_compose_navigation.api.navigator.data.NestedNavigatorParams
 import ru.wearemad.mad_compose_navigation.api.navigator.navigator_factory.NavigatorFactory
 import ru.wearemad.mad_compose_navigation.api.restorer.NavigatorRestorerParams
@@ -30,8 +29,6 @@ class AppNestedNavigator(
         routesList = result.currentStack
         dialogRoutesList = result.currentDialogsStack
         setNavigators(result.nestedNavigators)
-        launch {
-            onStackChanged()
-        }
+        updateNavigatorState(createNavigatorState())
     }
 }

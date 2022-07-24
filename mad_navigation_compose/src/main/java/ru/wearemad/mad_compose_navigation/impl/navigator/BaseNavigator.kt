@@ -99,33 +99,30 @@ abstract class BaseNavigator(
 
     protected suspend fun onStackChanged() {
         clearUnusedNestedNavigators(routesList)
-        val navigatorState = NavigatorState(
-            screenId = params.screenId,
-            currentStack = routesList,
-            currentDialogsStack = dialogRoutesList,
-            nestedNavigatorsState = nestedNavigators.map {
-                it.navigator.state
-            },
-        )
-        withContext(mainDispatcher) {
-            updateNavigatorState(navigatorState)
-        }
-    }
-
-    private suspend fun onNestedNavigatorsStackChangedEvent() {
-        clearUnusedNestedNavigators(routesList)
-        val navigatorState = NavigatorState(
-            screenId = params.screenId,
-            currentStack = routesList,
-            currentDialogsStack = dialogRoutesList,
-            nestedNavigatorsState = nestedNavigators.map {
-                it.navigator.state
-            },
-        )
+        val navigatorState = createNavigatorState()
         withContext(mainDispatcher) {
             updateNavigatorState(navigatorState)
             afterStackChanged()
         }
+    }
+
+    private suspend fun onNestedNavigatorsStackChangedEvent() {
+        onStackChanged()
+    }
+
+    protected fun createNavigatorState(): NavigatorState = NavigatorState(
+        screenId = params.screenId,
+        currentStack = routesList,
+        currentDialogsStack = dialogRoutesList,
+        nestedNavigatorsState = nestedNavigators.map {
+            it.navigator.state
+        },
+    )
+
+    @MainThread
+    protected fun updateNavigatorState(newState: NavigatorState) {
+        updateOnBackPressedCallback(canGoBack)
+        stateMutableFlow.value = newState
     }
 
     private fun subscribeToInputEvents() {
@@ -165,13 +162,6 @@ abstract class BaseNavigator(
             routesList = result.newScreensStack
         }
         onStackChanged()
-        afterStackChanged()
-    }
-
-    @MainThread
-    private fun updateNavigatorState(newState: NavigatorState) {
-        updateOnBackPressedCallback(canGoBack)
-        stateMutableFlow.value = newState
     }
 }
 
