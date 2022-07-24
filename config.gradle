@@ -1,9 +1,9 @@
 ext {
     applicationName = "Navigation Compose"
     appId = "ru.wearemad.navigation"
-    compileSdk = 31
+    compileSdk = 32
     minSdk = 21
-    targetSdk = 31
+    targetSdk = 32
 
     //version
     vCode = 5

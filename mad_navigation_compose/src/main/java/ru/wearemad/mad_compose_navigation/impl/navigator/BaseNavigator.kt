@@ -1,7 +1,6 @@
 package ru.wearemad.mad_compose_navigation.impl.navigator
 
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.MainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -82,7 +81,6 @@ abstract class BaseNavigator(
     }
 
     override fun dispatchSystemOnBackPressed() {
-        Log.d("MIINE", "BaseNavigator dispatchSystemOnBackPressed, canGoBack: $canGoBack")
         if (canGoBack.not()) {
             return
         }
@@ -135,7 +133,6 @@ abstract class BaseNavigator(
             inputEventsChannel
                 .receiveAsFlow()
                 .collect {
-                    Log.d("MIINE", "BaseNavigator inputEventsChannel, event: $it")
                     when (it) {
                         is NavigatorInputEvent.ExecuteCommands -> onExecuteCommandsEvent(it)
                     }
@@ -146,7 +143,6 @@ abstract class BaseNavigator(
                 .inEventsChannel
                 .receiveAsFlow()
                 .collect {
-                    Log.d("MIINE", "BaseNavigator inEventsChannel, event: $it")
                     when (it) {
                         is NestedStackChanged -> onNestedNavigatorsStackChangedEvent()
                         is DispatchSystemOnBackPressed -> withContext(mainDispatcher) {
@@ -158,9 +154,7 @@ abstract class BaseNavigator(
     }
 
     private suspend fun onExecuteCommandsEvent(event: NavigatorInputEvent.ExecuteCommands) {
-        Log.d("MIINE", "BaseNavigator onExecuteCommandsEvent")
         event.commands.forEach {
-            Log.d("MIINE", "BaseNavigator onExecuteCommand: $it")
             val result = it.execute(
                 CommandInput(
                     routesList,
