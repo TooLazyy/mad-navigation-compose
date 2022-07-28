@@ -6,11 +6,11 @@ ext {
     targetSdk = 32
 
     //version
-    vCode = 5
-    vName = "1.0.4"
+    vCode = 6
+    vName = "1.0.5"
 
     //gradle
-    gradleVersion = '7.0.4'
+    gradleVersion = '7.2.1'
 
     //kotlin
     kotlinVersion = '1.7.0'
