@@ -1,5 +1,6 @@
 package ru.wearemad.mad_compose_navigation.impl.router
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -24,18 +25,31 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
     private var commandsChannelJob: Job? = null
     private var currentExecutor: CommandsExecutor? = null
 
+    init {
+        Log.d("MIINE", "DefaultRouterNavigatorHolder init")
+    }
+
     override suspend fun executeCommands(vararg commands: Command) {
+        val message = buildString {
+            commands.forEach {
+                append("command: ${it}\n")
+            }
+        }
+        Log.d("MIINE", "executeCommands: $message")
         commandsChannel.send(commands)
     }
 
     override suspend fun attachNavigator(navigator: CommandsExecutor) {
+        Log.d("MIINE", "attachNavigator: $navigator")
         commandsChannelJob?.cancel()
         currentExecutor = navigator
         commandsChannelJob = coroutineScope {
             launch(mainDispatcher + Job()) {
+                Log.d("MIINE", "attachNavigator collect")
                 commandsChannel
                     .receiveAsFlow()
                     .collect {
+                        Log.d("MIINE", "attachNavigator, new commands: ${it.size}")
                         currentExecutor?.executeCommands(*it)
                     }
             }
@@ -43,6 +57,7 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
     }
 
     override fun detachNavigator() {
+        Log.d("MIINE", "detachNavigator")
         commandsChannelJob?.cancel()
         currentExecutor = null
     }
