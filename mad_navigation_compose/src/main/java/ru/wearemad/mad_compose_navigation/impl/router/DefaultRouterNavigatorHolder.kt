@@ -43,6 +43,7 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
     override suspend fun attachNavigator(navigator: CommandsExecutor) {
         Log.d("MIINE", "DefaultRouterNavigatorHolder attachNavigator: $navigator")
         if (currentExecutor.get() != null) {
+            Log.d("MIINE", "DefaultRouterNavigatorHolder attachNavigator attached")
             return
         }
         commandsChannelJob?.cancel()
