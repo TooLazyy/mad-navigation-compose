@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.wearemad.mad_compose_navigation.api.command.Command
 import ru.wearemad.mad_compose_navigation.api.command.CommandsExecutor
 import ru.wearemad.mad_compose_navigation.api.router.RouterNavigatorHolder
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Default implementation of RouterNavigatorHolder
@@ -23,7 +24,7 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
     )
 
     private var commandsChannelJob: Job? = null
-    private var currentExecutor: CommandsExecutor? = null
+    private val currentExecutor: AtomicReference<CommandsExecutor?> = AtomicReference(null)
 
     init {
         Log.d("MIINE", "DefaultRouterNavigatorHolder init: $this")
@@ -35,30 +36,33 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
                 append("command: ${it}\n")
             }
         }
-        Log.d("MIINE", "executeCommands: $message")
+        Log.d("MIINE", "DefaultRouterNavigatorHolder executeCommands: $message")
         commandsChannel.send(commands)
     }
 
     override suspend fun attachNavigator(navigator: CommandsExecutor) {
-        Log.d("MIINE", "attachNavigator: $navigator")
+        Log.d("MIINE", "DefaultRouterNavigatorHolder attachNavigator: $navigator")
+        if (currentExecutor.get() != null) {
+            return
+        }
         commandsChannelJob?.cancel()
-        currentExecutor = navigator
+        currentExecutor.set(navigator)
         commandsChannelJob = coroutineScope {
             launch(mainDispatcher + Job()) {
-                Log.d("MIINE", "attachNavigator collect")
+                Log.d("MIINE", "DefaultRouterNavigatorHolder attachNavigator collect")
                 commandsChannel
                     .receiveAsFlow()
                     .collect {
-                        Log.d("MIINE", "attachNavigator, new commands: ${it.size}")
-                        currentExecutor?.executeCommands(*it)
+                        Log.d("MIINE", "DefaultRouterNavigatorHolder attachNavigator, new commands: ${it.size}")
+                        currentExecutor.get()?.executeCommands(*it)
                     }
             }
         }
     }
 
     override fun detachNavigator() {
-        Log.d("MIINE", "detachNavigator: $this")
+        Log.d("MIINE", "DefaultRouterNavigatorHolder detachNavigator: $this")
         commandsChannelJob?.cancel()
-        currentExecutor = null
+        currentExecutor.set(null)
     }
 }
