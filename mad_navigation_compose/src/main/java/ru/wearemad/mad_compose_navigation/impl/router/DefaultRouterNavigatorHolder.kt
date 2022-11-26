@@ -26,7 +26,7 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
     private var currentExecutor: CommandsExecutor? = null
 
     init {
-        Log.d("MIINE", "DefaultRouterNavigatorHolder init")
+        Log.d("MIINE", "DefaultRouterNavigatorHolder init: $this")
     }
 
     override suspend fun executeCommands(vararg commands: Command) {
@@ -57,7 +57,7 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
     }
 
     override fun detachNavigator() {
-        Log.d("MIINE", "detachNavigator")
+        Log.d("MIINE", "detachNavigator: $this")
         commandsChannelJob?.cancel()
         currentExecutor = null
     }
