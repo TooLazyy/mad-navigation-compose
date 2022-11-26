@@ -60,6 +60,7 @@ abstract class BaseNavigator(
     override val coroutineContext: CoroutineContext = supervisorJob + bgDispatcher
 
     init {
+        Log.d("MIINE", "BaseNavigator init: $this")
         subscribeToInputEvents()
     }
 
