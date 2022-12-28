@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ru.wearemad.mad_compose_navigation.api.command.Command
 import ru.wearemad.mad_compose_navigation.api.command.CommandsExecutor
 import ru.wearemad.mad_compose_navigation.api.router.RouterNavigatorHolder
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Default implementation of RouterNavigatorHolder
@@ -22,21 +23,24 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
     )
 
     private var commandsChannelJob: Job? = null
-    private var currentExecutor: CommandsExecutor? = null
+    private val currentExecutor: AtomicReference<CommandsExecutor?> = AtomicReference(null)
 
     override suspend fun executeCommands(vararg commands: Command) {
         commandsChannel.send(commands)
     }
 
     override suspend fun attachNavigator(navigator: CommandsExecutor) {
+        if (currentExecutor.get() != null) {
+            return
+        }
         commandsChannelJob?.cancel()
-        currentExecutor = navigator
+        currentExecutor.set(navigator)
         commandsChannelJob = coroutineScope {
             launch(mainDispatcher + Job()) {
                 commandsChannel
                     .receiveAsFlow()
                     .collect {
-                        currentExecutor?.executeCommands(*it)
+                        currentExecutor.get()?.executeCommands(*it)
                     }
             }
         }
@@ -44,6 +48,6 @@ class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
 
     override fun detachNavigator() {
         commandsChannelJob?.cancel()
-        currentExecutor = null
+        currentExecutor.set(null)
     }
 }
