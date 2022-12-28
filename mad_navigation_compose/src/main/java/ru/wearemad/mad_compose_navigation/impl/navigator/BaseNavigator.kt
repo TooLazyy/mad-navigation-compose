@@ -1,7 +1,6 @@
 package ru.wearemad.mad_compose_navigation.impl.navigator
 
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.MainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -60,12 +59,10 @@ abstract class BaseNavigator(
     override val coroutineContext: CoroutineContext = supervisorJob + bgDispatcher
 
     init {
-        Log.d("MIINE", "BaseNavigator init: $this")
         subscribeToInputEvents()
     }
 
     override suspend fun executeCommands(vararg commands: Command) {
-        Log.d("MIINE", "router: $this, executeCommands: ${commands.size}")
         inputEventsChannel.send(NavigatorInputEvent.ExecuteCommands(commands))
     }
 
@@ -154,15 +151,7 @@ abstract class BaseNavigator(
     }
 
     private suspend fun onExecuteCommandsEvent(event: NavigatorInputEvent.ExecuteCommands) {
-        Log.d("MIINE", "router: $this, onExecuteCommandsEvent")
-        fun doIt(): String = buildString {
-            routesList.forEach {
-                append(it)
-                append("\n")
-            }
-        }
         event.commands.forEach {
-            Log.d("MIINE", "before onExecuteCommands: $it, routes: ${doIt()}")
             val result = it.execute(
                 CommandInput(
                     routesList,
@@ -171,9 +160,7 @@ abstract class BaseNavigator(
             )
             dialogRoutesList = result.newDialogsStack
             routesList = result.newScreensStack
-            Log.d("MIINE", "after onExecuteCommands: $it, routes: ${doIt()}")
         }
-        Log.d("MIINE", "onExecuteCommands done, routes: ${doIt()}")
         onStackChanged()
     }
 }
