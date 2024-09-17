@@ -2,27 +2,27 @@ ext {
     applicationName = "Navigation Compose"
     appId = "ru.wearemad.navigation"
     compileSdk = 34
-    minSdk = 21
+    minSdk = 24
     targetSdk = 34
 
     //version
-    vCode = 8
-    vName = "1.0.7"
+    vCode = 9
+    vName = "1.0.8"
 
     //gradle
-    gradleVersion = '7.4.2'
+    gradleVersion = '8.4.2'
 
     //kotlin
-    kotlinVersion = '1.8.22'
-    ktxVersion = '1.12.0'
+    kotlinVersion = '1.9.20'
+    ktxVersion = '1.13.1'
     kotlinCoroutinesVersion = '1.6.0'
-    kotlinCoroutinesAndroidVersion = '1.6.4'
+    kotlinCoroutinesAndroidVersion = '1.8.1'
 
     //app compat
     appCompatVersion = '1.6.1'
 
     //compose
-    composeCompilerVersion = '1.4.8'
-    composeRuntimeVersion = '1.5.1'
-    composeActivityVersion = '1.7.2'
+    composeCompilerVersion = '1.5.5'
+    composeRuntimeVersion = '1.7.1'
+    composeActivityVersion = '1.9.2'
 }

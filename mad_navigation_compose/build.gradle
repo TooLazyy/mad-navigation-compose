@@ -9,6 +9,7 @@ apply from: '../config.gradle'
 
 android {
     compileSdk project.compileSdk
+    namespace 'ru.wearemad.mad_compose_navigation'
 
     defaultConfig {
         minSdkVersion project.minSdk
@@ -37,6 +38,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion project.composeCompilerVersion
     }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -47,7 +53,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesAndroidVersion"
 }
 
-project.afterEvaluate {
+/*project.afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
@@ -55,4 +61,31 @@ project.afterEvaluate {
             }
         }
     }
+}*/
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                components.getByName('release')
+                groupId = 'ru.wearemad'
+                artifactId = 'mad_compose_navigation'
+                version = project.vName
+            }
+        }
+    }
 }
+/*
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'ru.wearemad'
+            artifactId = 'mad_compose_navigation'
+            version = project.vName
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}*/

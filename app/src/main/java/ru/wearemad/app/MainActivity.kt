@@ -2,6 +2,7 @@ package ru.wearemad.app
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import ru.wearemad.navigation.R
 
 class MainActivity : AppCompatActivity() {
 
