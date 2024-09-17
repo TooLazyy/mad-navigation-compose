@@ -63,15 +63,16 @@ dependencies {
     }
 }*/
 
-project.afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                components.getByName('release')
+publishing {
+    publications {
+        release(MavenPublication) {
+            afterEvaluate {
+                from components.release
                 groupId = 'ru.wearemad'
                 artifactId = 'mad_compose_navigation'
                 version = project.vName
             }
+            //from components.getByName('release')
         }
     }
 }
