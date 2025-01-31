@@ -11,6 +11,7 @@ import ru.wearemad.mad_compose_navigation.api.route.Route
  */
 class NewRoot(
     private val route: Route,
+    private val withAnimation: Boolean,
     private val includeDialogs: Boolean = true,
 ) : Command {
 
@@ -22,7 +23,8 @@ class NewRoot(
             listOf()
         } else {
             input.dialogsStack
-        }
+        },
+        withAnimation = withAnimation,
     )
 }
 
@@ -31,7 +33,8 @@ class NewRoot(
  * @param route - route to add to the end
  */
 class Add(
-    private val route: Route
+    private val route: Route,
+    private val withAnimation: Boolean,
 ) : Command {
 
     override fun execute(
@@ -40,7 +43,8 @@ class Add(
         input.screensStack.toMutableList().apply {
             add(route)
         },
-        input.dialogsStack
+        input.dialogsStack,
+        withAnimation = withAnimation,
     )
 }
 
@@ -48,7 +52,8 @@ class Add(
  * Remove a most recent rout from stack
  */
 class Back(
-    private val includeDialogs: Boolean = true
+    private val withAnimation: Boolean,
+    private val includeDialogs: Boolean = true,
 ) : Command {
 
     override fun execute(
@@ -78,7 +83,8 @@ class Back(
             screensStack,
             dialogsStack.toMutableList().apply {
                 removeAt(dialogsStack.lastIndex)
-            }
+            },
+            withAnimation = withAnimation,
         )
     }
 
@@ -91,7 +97,8 @@ class Back(
                 removeAt(screensStack.lastIndex)
             }
         },
-        dialogsStack
+        dialogsStack,
+        withAnimation = withAnimation,
     )
 }
 
@@ -101,6 +108,7 @@ class Back(
  */
 class BackTo(
     private val route: Route,
+    private val withAnimation: Boolean,
     private val closeDialogs: Boolean = true
 ) : Command {
 
@@ -119,7 +127,8 @@ class BackTo(
             listOf()
         } else {
             input.dialogsStack
-        }
+        },
+        withAnimation = withAnimation,
     )
 }
 
@@ -127,6 +136,7 @@ class BackTo(
  * Navigates back to a very first route
  */
 class BackToRoot(
+    private val withAnimation: Boolean,
     private val closeDialogs: Boolean = true,
 ) : Command {
 
@@ -142,7 +152,8 @@ class BackToRoot(
             input.dialogsStack
         } else {
             listOf()
-        }
+        },
+        withAnimation = withAnimation
     )
 }
 
@@ -151,7 +162,8 @@ class BackToRoot(
  * @param route to replace the last one
  */
 class Replace(
-    private val route: Route
+    private val route: Route,
+    private val withAnimation: Boolean,
 ) : Command {
 
     override fun execute(
@@ -163,7 +175,8 @@ class Replace(
             }
             add(route)
         },
-        input.dialogsStack
+        input.dialogsStack,
+        withAnimation = withAnimation,
     )
 }
 
@@ -181,6 +194,7 @@ class OpenAsDialog(
         input.screensStack,
         input.dialogsStack.toMutableList().apply {
             add(route)
-        }
+        },
+        withAnimation = false,
     )
 }

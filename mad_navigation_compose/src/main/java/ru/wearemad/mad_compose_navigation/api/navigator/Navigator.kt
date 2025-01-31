@@ -16,9 +16,15 @@ interface Navigator :
     RestorableState,
     BackPressHandler,
     ChildrenBackPressHandler,
-    NestedNavigatorsHost {
+    NestedNavigatorsHost,
+    AnimationStateUpdater {
 
     val state: NavigatorState
 
     val stateFlow: StateFlow<NavigatorState>
+}
+
+fun interface AnimationStateUpdater {
+
+    fun updateAnimationState(animationInProgress: Boolean)
 }

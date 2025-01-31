@@ -6,7 +6,8 @@ data class NavigatorState(
     val screenId: String,
     val currentStack: List<Route> = listOf(),
     val currentDialogsStack: List<Route> = listOf(),
-    val nestedNavigatorsState: List<NavigatorState> = listOf()
+    val nestedNavigatorsState: List<NavigatorState> = listOf(),
+    val withAnimation: Boolean = false
 ) {
 
     val currentRoute: Route?
