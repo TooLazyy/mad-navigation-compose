@@ -1,7 +1,6 @@
 package ru.wearemad.mad_compose_navigation.impl.navigator
 
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.MainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -69,7 +68,6 @@ abstract class BaseNavigator(
     }
 
     override fun updateAnimationState(animationInProgress: Boolean) {
-        Log.d("MIINE", "updateAnimationState. withAnimation=$withAnimation. animationInProgress=$animationInProgress")
         launch(mainDispatcher) {
             inputEventsChannel.send(NavigatorInputEvent.UpdateAnimationState(inProgress = animationInProgress))
         }
@@ -143,7 +141,6 @@ abstract class BaseNavigator(
                     when (it) {
                         is NavigatorInputEvent.ExecuteCommands -> onExecuteCommandsEvent(it)
                         is NavigatorInputEvent.UpdateAnimationState -> {
-                            Log.d("MIINE", "handle UpdateAnimationState. withAnimation=$withAnimation. it.inProgress=${it.inProgress}")
                             withAnimation = it.inProgress
                             onStackChanged()
                         }
@@ -166,7 +163,6 @@ abstract class BaseNavigator(
     }
 
     private suspend fun onExecuteCommandsEvent(event: NavigatorInputEvent.ExecuteCommands) {
-        Log.d("MIINE", "onExecuteCommandsEvent start")
         event.commands.forEach {
             val result = it.execute(
                 CommandInput(
@@ -174,12 +170,10 @@ abstract class BaseNavigator(
                     dialogRoutesList
                 )
             )
-            Log.d("MIINE", "command=$it, withAnimation=${result.withAnimation}")
             dialogRoutesList = result.newDialogsStack
             routesList = result.newScreensStack
             withAnimation = result.withAnimation
         }
-        Log.d("MIINE", "onExecuteCommandsEvent done. withAnimation=$withAnimation")
         onStackChanged()
     }
 }
