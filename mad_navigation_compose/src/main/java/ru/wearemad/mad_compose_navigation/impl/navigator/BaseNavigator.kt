@@ -1,9 +1,12 @@
 package ru.wearemad.mad_compose_navigation.impl.navigator
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.MainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.Channel
@@ -38,7 +41,7 @@ abstract class BaseNavigator(
     //coroutines
     private val supervisorJob = SupervisorJob()
     private val bgDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val mainDispatcher = Dispatchers.Main.immediate
+    private val mainDispatcher = Handler(Looper.getMainLooper()).asCoroutineDispatcher()//TODO Dispatchers.Main.immediate
 
     //state
     protected var routesList = listOf<Route>()

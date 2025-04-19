@@ -1,7 +1,10 @@
 package ru.wearemad.mad_compose_navigation.impl.router
 
+import android.os.Handler
+import android.os.Looper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -17,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference
  */
 class DefaultRouterNavigatorHolder : RouterNavigatorHolder {
 
-    private val mainDispatcher = Dispatchers.Main.immediate
+    private val mainDispatcher = Handler(Looper.getMainLooper()).asCoroutineDispatcher()//TODO Dispatchers.Main.immediate
     private val commandsChannel = Channel<Array<out Command>>(
         capacity = Channel.BUFFERED
     )
