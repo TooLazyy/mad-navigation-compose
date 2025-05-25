@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-parcelize'
     id 'maven-publish'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 apply from: '../config.gradle'
@@ -34,9 +35,6 @@ android {
     }
     buildFeatures {
         compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion project.composeCompilerVersion
     }
     publishing {
         singleVariant("release") {
