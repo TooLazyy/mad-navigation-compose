@@ -118,8 +118,8 @@ class BackTo(
         input.screensStack.toMutableList().apply {
             val index = input.screensStack.indexOfFirst { it.screenKey == route.screenKey }
             if (index != -1) {
-                while (input.screensStack.size != index + 1) {
-                    removeAt(input.screensStack.lastIndex)
+                while (size != index + 1) {
+                    removeAt(lastIndex)
                 }
             }
         },
