@@ -6,14 +6,14 @@ ext {
     targetSdk = 36
 
     //version
-    vCode = 13
-    vName = "1.1.2"
+    vCode = 14
+    vName = "1.2.0"
 
     //gradle
-    gradleVersion = '8.9.1'
+    gradleVersion = '8.13.2'
 
     //kotlin
-    kotlinVersion = '2.2.0'
+    kotlinVersion = '2.3.20'
     ktxVersion = '1.18.0'
     kotlinCoroutinesVersion = '1.11.0'
     kotlinCoroutinesAndroidVersion = '1.11.0'
@@ -22,6 +22,6 @@ ext {
     appCompatVersion = '1.7.0'
 
     //compose
-    composeRuntimeVersion = '1.10.6'
+    composeRuntimeVersion = '1.11.4'
     composeActivityVersion = '1.13.0'
 }
