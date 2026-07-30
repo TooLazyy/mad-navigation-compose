@@ -7,6 +7,9 @@ class ChildrenBackPressHandlerDelegate : ChildrenBackPressHandler {
 
     private var systemBackPressedListeners = listOf<SystemBackPressedListener>()
 
+    override val hasSystemBackPressedListeners: Boolean
+        get() = systemBackPressedListeners.isNotEmpty()
+
     override fun dispatchBackPressedToChildren(): Boolean {
         if (systemBackPressedListeners.isEmpty()) {
             return false

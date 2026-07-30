@@ -4,6 +4,8 @@ import androidx.annotation.MainThread
 
 interface ChildrenBackPressHandler {
 
+    val hasSystemBackPressedListeners: Boolean
+
     @MainThread
     fun dispatchBackPressedToChildren(): Boolean
 

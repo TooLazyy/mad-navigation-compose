@@ -12,6 +12,8 @@ class DefaultBackPressCallbackHolder(
     private val inEventsChannel: Channel<NavigatorEventsChannelEvent>
 ) : BackPressCallbackHolder {
 
+    private var backPressedDispatcher: OnBackPressedDispatcher? = null
+
     private val backPressedCallback = object : OnBackPressedCallback(canGoBack) {
 
         override fun handleOnBackPressed() {
@@ -24,10 +26,20 @@ class DefaultBackPressCallbackHolder(
     }
 
     override fun registerOnBackPressedCallback(dispatcher: OnBackPressedDispatcher?) {
+        backPressedDispatcher = dispatcher
         dispatcher?.addCallback(backPressedCallback)
     }
 
     override fun unregisterOnBackPressedCallback() {
+        backPressedDispatcher = null
         backPressedCallback.remove()
+    }
+
+    override fun dispatchBackPressToSystem() {
+        val dispatcher = backPressedDispatcher ?: return
+        val wasEnabled = backPressedCallback.isEnabled
+        backPressedCallback.isEnabled = false
+        dispatcher.onBackPressed()
+        backPressedCallback.isEnabled = wasEnabled
     }
 }

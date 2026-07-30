@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.wearemad.mad_compose_navigation.api.back_press.BackPressCallbackHolder
 import ru.wearemad.mad_compose_navigation.api.back_press.ChildrenBackPressHandler
+import ru.wearemad.mad_compose_navigation.api.back_press.SystemBackPressedListener
 import ru.wearemad.mad_compose_navigation.api.command.Command
 import ru.wearemad.mad_compose_navigation.api.command.CommandInput
 import ru.wearemad.mad_compose_navigation.api.navigator.Navigator
@@ -88,18 +89,29 @@ abstract class BaseNavigator(
     }
 
     override fun dispatchSystemOnBackPressed() {
-        if (canGoBack.not()) {
+        val dispatched = dispatchBackPressedToChildren()
+        if (dispatched) {
             return
         }
 
-        val dispatched = dispatchBackPressedToChildren()
-        if (dispatched) {
+        if (canGoBack.not()) {
+            dispatchBackPressToSystem()
             return
         }
 
         launch {
             executeCommands(Back(withAnimation = true))
         }
+    }
+
+    override fun addSystemBackPressedListener(listener: SystemBackPressedListener) {
+        params.childrenBackPressHandler.addSystemBackPressedListener(listener)
+        updateOnBackPressedCallback(shouldInterceptBackPress())
+    }
+
+    override fun removeSystemBackPressedListener(listener: SystemBackPressedListener) {
+        params.childrenBackPressHandler.removeSystemBackPressedListener(listener)
+        updateOnBackPressedCallback(shouldInterceptBackPress())
     }
 
     open suspend fun afterStackChanged() {}
@@ -129,9 +141,11 @@ abstract class BaseNavigator(
 
     @MainThread
     protected fun updateNavigatorState(newState: NavigatorState) {
-        updateOnBackPressedCallback(canGoBack)
+        updateOnBackPressedCallback(shouldInterceptBackPress())
         stateMutableFlow.value = newState
     }
+
+    private fun shouldInterceptBackPress(): Boolean = canGoBack || hasSystemBackPressedListeners
 
     private fun subscribeToInputEvents() {
         launch {

@@ -9,4 +9,6 @@ interface BackPressCallbackHolder {
     fun registerOnBackPressedCallback(dispatcher: OnBackPressedDispatcher?)
 
     fun unregisterOnBackPressedCallback()
+
+    fun dispatchBackPressToSystem()
 }
