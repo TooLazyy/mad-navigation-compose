@@ -2,6 +2,7 @@ package ru.wearemad.mad_compose_navigation.impl.restorer
 
 import android.os.Bundle
 import ru.wearemad.mad_compose_navigation.api.navigator.navigator_factory.NavigatorFactoryParams
+import ru.wearemad.mad_compose_navigation.api.navigator.data.StackEntry
 import ru.wearemad.mad_compose_navigation.api.navigator.nested.data.NestedNavigatorData
 import ru.wearemad.mad_compose_navigation.api.route.Route
 import ru.wearemad.mad_compose_navigation.api.restorer.MainNavigatorRestorer
@@ -20,11 +21,10 @@ class DefaultMainNavigatorRestorer : MainNavigatorRestorer {
         params: NavigatorRestorerParams
     ): RestoreStateResult {
         val mainBundle = params.state.getBundle(KEY_COMPOSE_MAIN_NAVIGATOR_BUNDLE) ?: return RestoreStateResult()
-        val currentStack =
-            (mainBundle.getParcelableArray(KEY_COMPOSE_MAIN_NAVIGATOR_ROUTES_DATA) ?: arrayOf()).toList() as List<Route>
-        val currentDialogsStack =
-            (mainBundle.getParcelableArray(KEY_COMPOSE_MAIN_NAVIGATOR_DIALOGS_DATA)
-                ?: arrayOf()).toList() as List<Route>
+        val currentStack = (mainBundle.getParcelableArray(KEY_COMPOSE_MAIN_NAVIGATOR_ROUTES_DATA) ?: arrayOf())
+            .filterIsInstance<StackEntry>()
+        val currentDialogsStack = (mainBundle.getParcelableArray(KEY_COMPOSE_MAIN_NAVIGATOR_DIALOGS_DATA) ?: arrayOf())
+            .filterIsInstance<StackEntry>()
         val nestedNavigators = restoreNestedNavigators(mainBundle, params)
         return RestoreStateResult(
             currentStack = currentStack,
@@ -50,16 +50,16 @@ class DefaultMainNavigatorRestorer : MainNavigatorRestorer {
                     realKey to nestedBundle
                 }
             }
-            .map { (screenId, bundle) ->
+            .map { (instanceId, bundle) ->
                 val navigator = params.factory.create(
                     NavigatorFactoryParams.NestedNavigatorParams(
-                        screenId,
+                        instanceId,
                         params.parentInEventsChannel
                     )
                 )
                 navigator.restoreState(bundle, params.factory)
                 NestedNavigatorData(
-                    screenId,
+                    instanceId,
                     navigator
                 )
             }

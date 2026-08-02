@@ -40,7 +40,7 @@ class DefaultMainNavigatorSaver : MainNavigatorSaver {
         nestedNavigators.forEach { nestedNavigatorData ->
             val nestedBundle = nestedNavigatorData.navigator.saveState()
             putBundle(
-                KEY_COMPOSE_MAIN_NAVIGATOR_NESTED_NAVIGATOR_DATA_PREFIX + nestedNavigatorData.screenKey,
+                KEY_COMPOSE_MAIN_NAVIGATOR_NESTED_NAVIGATOR_DATA_PREFIX + nestedNavigatorData.instanceId,
                 nestedBundle
             )
         }

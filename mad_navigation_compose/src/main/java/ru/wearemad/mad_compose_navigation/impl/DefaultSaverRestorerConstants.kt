@@ -22,17 +22,17 @@ internal const val KEY_COMPOSE_NESTED_NAVIGATOR_NESTED_NAVIGATOR_DATA_PREFIX =
     "key_compose_nested_navigator_nested_navigator_data_prefix_"
 //endregion
 
-internal fun buildNestedKey(screenId: String): String =
-    KEY_COMPOSE_NESTED_NAVIGATOR_NESTED_DATA_PREFIX + screenId
+internal fun buildNestedKey(instanceId: String): String =
+    KEY_COMPOSE_NESTED_NAVIGATOR_NESTED_DATA_PREFIX + instanceId
 
-internal fun buildBundlePrefix(screenId: String): String =
-    KEY_COMPOSE_NESTED_NAVIGATOR_BUNDLE_PREFIX_ + screenId
+internal fun buildBundlePrefix(instanceId: String): String =
+    KEY_COMPOSE_NESTED_NAVIGATOR_BUNDLE_PREFIX_ + instanceId
 
-internal fun buildRoutesKey(screenId: String): String =
-    KEY_COMPOSE_NESTED_NAVIGATOR_ROUTES_DATA_PREFIX + screenId
+internal fun buildRoutesKey(instanceId: String): String =
+    KEY_COMPOSE_NESTED_NAVIGATOR_ROUTES_DATA_PREFIX + instanceId
 
-internal fun buildDialogsKey(screenId: String): String =
-    KEY_COMPOSE_NESTED_NAVIGATOR_DIALOGS_DATA_PREFIX + screenId
+internal fun buildDialogsKey(instanceId: String): String =
+    KEY_COMPOSE_NESTED_NAVIGATOR_DIALOGS_DATA_PREFIX + instanceId
 
-internal fun buildNestedNavigatorDataKey(screenId: String): String =
-    KEY_COMPOSE_NESTED_NAVIGATOR_NESTED_NAVIGATOR_DATA_PREFIX + screenId
+internal fun buildNestedNavigatorDataKey(instanceId: String): String =
+    KEY_COMPOSE_NESTED_NAVIGATOR_NESTED_NAVIGATOR_DATA_PREFIX + instanceId

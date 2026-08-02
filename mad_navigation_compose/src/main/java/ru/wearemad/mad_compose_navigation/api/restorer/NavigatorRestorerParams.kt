@@ -7,7 +7,7 @@ import ru.wearemad.mad_compose_navigation.api.navigator.navigator_factory.Naviga
 
 class NavigatorRestorerParams(
     val state: Bundle,
-    val screenId: String,
+    val instanceId: String,
     val factory: NavigatorFactory,
     val parentInEventsChannel: Channel<NavigatorEventsChannelEvent>
 )

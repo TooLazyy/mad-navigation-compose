@@ -21,7 +21,7 @@ class AppNestedNavigator(
         val result = params.restorer.restore(
             NavigatorRestorerParams(
                 state,
-                params.screenId,
+                params.instanceId,
                 factory,
                 params.inEventsChannel
             )

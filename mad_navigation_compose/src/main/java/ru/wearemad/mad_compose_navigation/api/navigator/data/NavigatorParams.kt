@@ -12,7 +12,7 @@ import ru.wearemad.mad_compose_navigation.api.saver.NestedNavigatorSaver
 
 interface NavigatorParams : NavigatorEventsChannelProvider {
 
-    val screenId: String
+    val instanceId: String
 
     val saver: NavigatorSaver
 

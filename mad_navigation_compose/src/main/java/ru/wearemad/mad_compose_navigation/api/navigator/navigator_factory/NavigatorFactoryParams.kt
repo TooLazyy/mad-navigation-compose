@@ -6,11 +6,11 @@ import ru.wearemad.mad_compose_navigation.api.navigator.data.NavigatorEventsChan
 sealed class NavigatorFactoryParams {
 
     class MainNavigatorParams(
-        val screenId: String,
+        val instanceId: String,
     ) : NavigatorFactoryParams()
 
     class NestedNavigatorParams(
-        val screenId: String,
+        val instanceId: String,
         val parentInEventsChannel: Channel<NavigatorEventsChannelEvent>
     ) : NavigatorFactoryParams()
 }

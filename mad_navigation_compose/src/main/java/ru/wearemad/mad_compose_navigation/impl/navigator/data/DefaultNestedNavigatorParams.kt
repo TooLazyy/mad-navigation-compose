@@ -16,7 +16,7 @@ import ru.wearemad.mad_compose_navigation.impl.saver.DefaultNestedNavigatorSaver
 
 class DefaultNestedNavigatorParams(
     canGoBack: Boolean = false,
-    override val screenId: String,
+    override val instanceId: String,
     override val outEventsChannel: Channel<NavigatorEventsChannelEvent>,
     override val saver: NestedNavigatorSaver = DefaultNestedNavigatorSaver(),
     override val restorer: NestedNavigatorRestorer = DefaultNestedNavigatorRestorer(),

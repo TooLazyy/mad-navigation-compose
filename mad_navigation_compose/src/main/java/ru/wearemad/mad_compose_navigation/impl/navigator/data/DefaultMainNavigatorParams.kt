@@ -16,7 +16,7 @@ import ru.wearemad.mad_compose_navigation.impl.saver.DefaultMainNavigatorSaver
 
 class DefaultMainNavigatorParams(
     canGoBack: Boolean = false,
-    override val screenId: String,
+    override val instanceId: String,
     override val saver: MainNavigatorSaver = DefaultMainNavigatorSaver(),
     override val restorer: MainNavigatorRestorer = DefaultMainNavigatorRestorer(),
     override val childrenBackPressHandler: ChildrenBackPressHandler = ChildrenBackPressHandlerDelegate(),

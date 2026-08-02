@@ -3,10 +3,10 @@ package ru.wearemad.mad_compose_navigation.impl.navigator.nested_host
 import kotlinx.coroutines.channels.Channel
 import ru.wearemad.mad_compose_navigation.api.navigator.Navigator
 import ru.wearemad.mad_compose_navigation.api.navigator.data.NavigatorEventsChannelEvent
+import ru.wearemad.mad_compose_navigation.api.navigator.data.StackEntry
 import ru.wearemad.mad_compose_navigation.api.navigator.navigator_factory.NestedNavigatorFactory
 import ru.wearemad.mad_compose_navigation.api.navigator.nested.NestedNavigatorsHost
 import ru.wearemad.mad_compose_navigation.api.navigator.nested.data.NestedNavigatorData
-import ru.wearemad.mad_compose_navigation.api.route.Route
 
 class DefaultNestedNavigatorsHost(
     private val parentOutEventsChannel: Channel<NavigatorEventsChannelEvent>
@@ -19,36 +19,36 @@ class DefaultNestedNavigatorsHost(
     }
 
     override fun getOrCreateNestedNavigator(
-        screenKey: String,
+        instanceId: String,
         factory: NestedNavigatorFactory
     ): Navigator {
-        val index = nestedNavigators.indexOfFirst { it.screenKey == screenKey }
+        val index = nestedNavigators.indexOfFirst { it.instanceId == instanceId }
         if (index >= 0) {
             return nestedNavigators[index].navigator
         }
-        val navigator = factory(screenKey, parentOutEventsChannel)
+        val navigator = factory(instanceId, parentOutEventsChannel)
         nestedNavigators = nestedNavigators.toMutableList().apply {
-            add(NestedNavigatorData(screenKey, navigator))
+            add(NestedNavigatorData(instanceId, navigator))
         }
         return navigator
     }
 
     override fun findNestedNavigator(
-        screenKey: String
+        instanceId: String
     ): Navigator? = nestedNavigators
-        .find { it.screenKey == screenKey }
+        .find { it.instanceId == instanceId }
         ?.navigator
 
-    override fun removeNestedNavigator(screenKey: String) {
+    override fun removeNestedNavigator(instanceId: String) {
         nestedNavigators = nestedNavigators
-            .filterNot { it.screenKey == screenKey }
+            .filterNot { it.instanceId == instanceId }
     }
 
-    override fun clearUnusedNestedNavigators(routesList: List<Route>) {
+    override fun clearUnusedNestedNavigators(routesList: List<StackEntry>) {
         val routesKeysList = routesList
-            .map { it.screenKey }
+            .map { it.instanceId }
             .toSet()
         nestedNavigators = nestedNavigators
-            .filter { routesKeysList.contains(it.screenKey) }
+            .filter { routesKeysList.contains(it.instanceId) }
     }
 }

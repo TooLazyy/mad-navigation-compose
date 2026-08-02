@@ -14,7 +14,7 @@ class DefaultNavigatorFactory(
     override fun create(
         params: NavigatorFactoryParams
     ): Navigator = when (params) {
-        is NavigatorFactoryParams.MainNavigatorParams -> mainFactory(params.screenId)
-        is NavigatorFactoryParams.NestedNavigatorParams -> nestedFactory(params.screenId, params.parentInEventsChannel)
+        is NavigatorFactoryParams.MainNavigatorParams -> mainFactory(params.instanceId)
+        is NavigatorFactoryParams.NestedNavigatorParams -> nestedFactory(params.instanceId, params.parentInEventsChannel)
     }
 }

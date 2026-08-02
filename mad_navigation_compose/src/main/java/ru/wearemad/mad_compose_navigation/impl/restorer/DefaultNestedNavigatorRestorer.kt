@@ -2,6 +2,7 @@ package ru.wearemad.mad_compose_navigation.impl.restorer
 
 import android.os.Bundle
 import ru.wearemad.mad_compose_navigation.api.navigator.navigator_factory.NavigatorFactoryParams
+import ru.wearemad.mad_compose_navigation.api.navigator.data.StackEntry
 import ru.wearemad.mad_compose_navigation.api.navigator.nested.data.NestedNavigatorData
 import ru.wearemad.mad_compose_navigation.api.route.Route
 import ru.wearemad.mad_compose_navigation.api.restorer.NavigatorRestorerParams
@@ -19,13 +20,12 @@ class DefaultNestedNavigatorRestorer : NestedNavigatorRestorer {
     override fun restore(
         params: NavigatorRestorerParams
     ): RestoreStateResult {
-        val screenId = params.screenId
-        val mainBundle = params.state.getBundle(buildBundlePrefix(screenId)) ?: return RestoreStateResult()
-        val currentStack =
-            (mainBundle.getParcelableArray(buildRoutesKey(screenId)) ?: arrayOf()).toList() as List<Route>
-        val currentDialogsStack =
-            (mainBundle
-                .getParcelableArray(buildDialogsKey(screenId)) ?: arrayOf()).toList() as List<Route>
+        val instanceId = params.instanceId
+        val mainBundle = params.state.getBundle(buildBundlePrefix(instanceId)) ?: return RestoreStateResult()
+        val currentStack = (mainBundle.getParcelableArray(buildRoutesKey(instanceId)) ?: arrayOf())
+            .filterIsInstance<StackEntry>()
+        val currentDialogsStack = (mainBundle.getParcelableArray(buildDialogsKey(instanceId)) ?: arrayOf())
+            .filterIsInstance<StackEntry>()
 
         val nestedNavigators = restoreNestedNavigators(mainBundle, params)
         return RestoreStateResult(
@@ -40,7 +40,7 @@ class DefaultNestedNavigatorRestorer : NestedNavigatorRestorer {
         params: NavigatorRestorerParams
     ): List<NestedNavigatorData> {
         val nestedNavigatorsBundle =
-            mainBundle.getBundle(buildNestedKey(params.screenId)) ?: return listOf()
+            mainBundle.getBundle(buildNestedKey(params.instanceId)) ?: return listOf()
         return nestedNavigatorsBundle
             .keySet()
             .mapNotNull { key ->
@@ -52,16 +52,16 @@ class DefaultNestedNavigatorRestorer : NestedNavigatorRestorer {
                     realKey to nestedBundle
                 }
             }
-            .map { (screenId, bundle) ->
+            .map { (instanceId, bundle) ->
                 val navigator = params.factory.create(
                     NavigatorFactoryParams.NestedNavigatorParams(
-                        screenId,
+                        instanceId,
                         params.parentInEventsChannel
                     )
                 )
                 navigator.restoreState(bundle, params.factory)
                 NestedNavigatorData(
-                    screenId,
+                    instanceId,
                     navigator
                 )
             }

@@ -13,18 +13,18 @@ fun defaultMainNavigatorFactory(
     AppMainNavigator(
         DefaultMainNavigatorParams(
             canGoBack = canGoBack,
-            screenId = it
+            instanceId = it
         )
     )
 }
 
 fun defaultNestedNavigatorFactory(
     canGoBack: Boolean = false
-): NestedNavigatorFactory = { screenId, parentInEventChannel ->
+): NestedNavigatorFactory = { instanceId, parentInEventChannel ->
     AppNestedNavigator(
         DefaultNestedNavigatorParams(
             canGoBack = canGoBack,
-            screenId = screenId,
+            instanceId = instanceId,
             outEventsChannel = parentInEventChannel
         )
     )

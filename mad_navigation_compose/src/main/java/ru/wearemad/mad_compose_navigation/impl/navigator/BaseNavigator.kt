@@ -21,6 +21,7 @@ import ru.wearemad.mad_compose_navigation.api.command.CommandInput
 import ru.wearemad.mad_compose_navigation.api.navigator.Navigator
 import ru.wearemad.mad_compose_navigation.api.navigator.data.NavigatorParams
 import ru.wearemad.mad_compose_navigation.api.navigator.data.NavigatorState
+import ru.wearemad.mad_compose_navigation.api.navigator.data.StackEntry
 import ru.wearemad.mad_compose_navigation.api.navigator.nested.NestedNavigatorsHost
 import ru.wearemad.mad_compose_navigation.api.route.Route
 import ru.wearemad.mad_compose_navigation.impl.command.Back
@@ -42,12 +43,12 @@ abstract class BaseNavigator(
     private val mainDispatcher = Dispatchers.Main.immediate
 
     //state
-    protected var routesList = listOf<Route>()
-    protected var dialogRoutesList = listOf<Route>()
+    protected var routesList = listOf<StackEntry>()
+    protected var dialogRoutesList = listOf<StackEntry>()
     private var withAnimation = false
 
     //events/state flow
-    private val stateMutableFlow = MutableStateFlow(NavigatorState(params.screenId))
+    private val stateMutableFlow = MutableStateFlow(NavigatorState(params.instanceId))
     private val inputEventsChannel = Channel<NavigatorInputEvent>(capacity = BUFFERED)
 
     override val state: NavigatorState
@@ -130,7 +131,7 @@ abstract class BaseNavigator(
     }
 
     protected fun createNavigatorState(): NavigatorState = NavigatorState(
-        screenId = params.screenId,
+        instanceId = params.instanceId,
         currentStack = routesList,
         currentDialogsStack = dialogRoutesList,
         nestedNavigatorsState = nestedNavigators.map {

@@ -3,6 +3,7 @@ package ru.wearemad.mad_compose_navigation.impl.command
 import ru.wearemad.mad_compose_navigation.api.command.Command
 import ru.wearemad.mad_compose_navigation.api.command.CommandInput
 import ru.wearemad.mad_compose_navigation.api.command.CommandOutput
+import ru.wearemad.mad_compose_navigation.api.navigator.data.StackEntry
 import ru.wearemad.mad_compose_navigation.api.route.Route
 
 /**
@@ -18,7 +19,7 @@ class NewRoot(
     override fun execute(
         input: CommandInput
     ): CommandOutput = CommandOutput(
-        listOf(route),
+        listOf(StackEntry.of(route)),
         if (includeDialogs) {
             listOf()
         } else {
@@ -41,7 +42,7 @@ class Add(
         input: CommandInput
     ): CommandOutput = CommandOutput(
         input.screensStack.toMutableList().apply {
-            add(route)
+            add(StackEntry.of(route))
         },
         input.dialogsStack,
         withAnimation = withAnimation,
@@ -64,8 +65,8 @@ class Back(
     )
 
     private fun applyCommand(
-        screensStack: List<Route>,
-        dialogsStack: List<Route>
+        screensStack: List<StackEntry>,
+        dialogsStack: List<StackEntry>
     ): CommandOutput {
         if (includeDialogs.not()) {
             return backWithoutDialogRoutes(
@@ -89,8 +90,8 @@ class Back(
     }
 
     private fun backWithoutDialogRoutes(
-        screensStack: List<Route>,
-        dialogsStack: List<Route>
+        screensStack: List<StackEntry>,
+        dialogsStack: List<StackEntry>
     ): CommandOutput = CommandOutput(
         screensStack.toMutableList().apply {
             if (isNotEmpty()) {
@@ -173,7 +174,7 @@ class Replace(
             if (isNotEmpty()) {
                 removeAt(input.screensStack.lastIndex)
             }
-            add(route)
+            add(StackEntry.of(route))
         },
         input.dialogsStack,
         withAnimation = withAnimation,
@@ -193,7 +194,7 @@ class OpenAsDialog(
     ): CommandOutput = CommandOutput(
         input.screensStack,
         input.dialogsStack.toMutableList().apply {
-            add(route)
+            add(StackEntry.of(route))
         },
         withAnimation = false,
     )

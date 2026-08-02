@@ -17,23 +17,23 @@ class DefaultNestedNavigatorSaver : NestedNavigatorSaver {
         nestedNavigators: List<NestedNavigatorData>,
         input: Bundle
     ) {
-        val screenId = navigatorState.screenId
+        val instanceId = navigatorState.instanceId
         val result = Bundle().apply {
             putParcelableArray(
-                buildRoutesKey(screenId),
+                buildRoutesKey(instanceId),
                 navigatorState.currentStack.toTypedArray()
             )
             putParcelableArray(
-                buildDialogsKey(screenId),
+                buildDialogsKey(instanceId),
                 navigatorState.currentDialogsStack.toTypedArray()
             )
             putBundle(
-                buildNestedKey(screenId),
+                buildNestedKey(instanceId),
                 buildNestedNavigatorsBundle(nestedNavigators)
             )
         }
         input.putBundle(
-            buildBundlePrefix(screenId),
+            buildBundlePrefix(instanceId),
             result
         )
     }
@@ -44,7 +44,7 @@ class DefaultNestedNavigatorSaver : NestedNavigatorSaver {
         nestedNavigators.forEach { nestedNavigatorData ->
             val nestedBundle = nestedNavigatorData.navigator.saveState()
             putBundle(
-                buildNestedNavigatorDataKey(nestedNavigatorData.screenKey),
+                buildNestedNavigatorDataKey(nestedNavigatorData.instanceId),
                 nestedBundle
             )
         }
