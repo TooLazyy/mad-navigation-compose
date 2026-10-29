@@ -11,6 +11,8 @@ class AppMainNavigator(
     params: MainNavigatorParams,
 ) : BaseNavigator(params) {
 
+    override val keepsLastScreen: Boolean = true
+
     private var restoreStateJob: Job? = null
 
     override fun restoreState(

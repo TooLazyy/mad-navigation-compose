@@ -56,6 +56,8 @@ abstract class BaseNavigator(
 
     override val stateFlow: StateFlow<NavigatorState> = stateMutableFlow
 
+    protected open val keepsLastScreen: Boolean = false
+
     override val canGoBack: Boolean
         get() = routesList.size > 1 || dialogRoutesList.isNotEmpty()
 
@@ -95,13 +97,8 @@ abstract class BaseNavigator(
             return
         }
 
-        if (canGoBack.not()) {
-            dispatchBackPressToSystem()
-            return
-        }
-
         launch {
-            executeCommands(Back(withAnimation = true))
+            inputEventsChannel.send(NavigatorInputEvent.SystemBack())
         }
     }
 
@@ -159,6 +156,7 @@ abstract class BaseNavigator(
                             withAnimation = it.inProgress
                             onStackChanged()
                         }
+                        is NavigatorInputEvent.SystemBack -> onSystemBackEvent()
                     }
                 }
         }
@@ -177,18 +175,42 @@ abstract class BaseNavigator(
         }
     }
 
+    private suspend fun onSystemBackEvent() {
+        if (canGoBack.not()) {
+            withContext(mainDispatcher) {
+                dispatchBackPressToSystem()
+            }
+            return
+        }
+        onExecuteCommandsEvent(
+            NavigatorInputEvent.ExecuteCommands(arrayOf(Back(withAnimation = true)))
+        )
+    }
+
     private suspend fun onExecuteCommandsEvent(event: NavigatorInputEvent.ExecuteCommands) {
+        var newRoutesList = routesList
+        var newDialogRoutesList = dialogRoutesList
+        var newWithAnimation = withAnimation
         event.commands.forEach {
             val result = it.execute(
                 CommandInput(
-                    routesList,
-                    dialogRoutesList
+                    newRoutesList,
+                    newDialogRoutesList
                 )
             )
-            dialogRoutesList = result.newDialogsStack
-            routesList = result.newScreensStack
-            withAnimation = result.withAnimation
+            newDialogRoutesList = result.newDialogsStack
+            newRoutesList = result.newScreensStack
+            newWithAnimation = result.withAnimation
         }
+        if (keepsLastScreen && routesList.isNotEmpty() && newRoutesList.isEmpty()) {
+            withContext(mainDispatcher) {
+                dispatchBackPressToSystem()
+            }
+            return
+        }
+        routesList = newRoutesList
+        dialogRoutesList = newDialogRoutesList
+        withAnimation = newWithAnimation
         onStackChanged()
     }
 }
@@ -202,4 +224,6 @@ sealed class NavigatorInputEvent {
     class UpdateAnimationState(
         val inProgress: Boolean
     ) : NavigatorInputEvent()
+
+    class SystemBack : NavigatorInputEvent()
 }
